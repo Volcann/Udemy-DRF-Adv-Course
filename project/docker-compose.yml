@@ -1,0 +1,21 @@
+version: '3'
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: user
+      POSTGRES_USER: volcann
+      POSTGRES_PASSWORD: voliSend13
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8080
+    volumes:
+      - .:/app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+volumes:
+  pgdata:
