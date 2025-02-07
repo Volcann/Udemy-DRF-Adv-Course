@@ -1,4 +1,16 @@
-version: '3'
+x-app: &app
+  build: .
+  restart: always
+  env_file:
+    - .env
+  volumes:
+    - .:/code
+    - ./media:/app/media
+  links:
+    - db
+  depends_on:
+    - db
+    
 services:
   db:
     image: postgres:latest
@@ -13,6 +25,7 @@ services:
     command: python manage.py runserver 0.0.0.0:8080
     volumes:
       - .:/app
+      - ./media:/app/media
     ports:
       - "8080:8080"
     depends_on:

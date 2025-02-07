@@ -31,6 +31,13 @@ class RecipeSerializer(serializers.ModelSerializer):
         fields = ('id', 'title', 'ingredients', 'tags', 'time_minutes',
                     'price','link')
         read_only_fields = ('id',)
+    
+    def get_image(self, obj):
+        """Return full URL for the image"""
+        request = self.context.get('request')
+        if obj.image:
+            return request.build_absolute_uri(obj.image.url)
+        return None
 
 class RecipeDetailSerializer(RecipeSerializer):
     """Serialize a recipe detail"""
@@ -43,3 +50,10 @@ class RecipeImageSerializer(serializers.ModelSerializer):
         model = Recipe
         fields = ('id', 'image')
         read_only_fields = ('id',)
+
+    def get_image(self, obj):
+        """Return full URL for the image"""
+        request = self.context.get('request')
+        if obj.image:
+            return request.build_absolute_uri(obj.image.url)
+        return None
