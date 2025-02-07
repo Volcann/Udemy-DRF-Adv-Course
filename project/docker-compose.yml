@@ -1,3 +1,5 @@
+version: "3.8"
+
 x-app: &app
   build: .
   restart: always
@@ -6,11 +8,9 @@ x-app: &app
   volumes:
     - .:/code
     - ./media:/app/media
-  links:
-    - db
   depends_on:
     - db
-    
+
 services:
   db:
     image: postgres:latest
@@ -20,15 +20,22 @@ services:
       POSTGRES_PASSWORD: voliSend13
     volumes:
       - pgdata:/var/lib/postgresql/data
+
   web:
-    build: .
-    command: python manage.py runserver 0.0.0.0:8080
-    volumes:
-      - .:/app
-      - ./media:/app/media
+    <<: *app
+    command: gunicorn project.wsgi:application --bind 0.0.0.0:8080
+    expose:
+      - "8080"
+
+  nginx:
+    image: nginx:latest
     ports:
-      - "8080:8080"
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./media:/app/media
     depends_on:
-      - db
+      - web
+
 volumes:
   pgdata:
